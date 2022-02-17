@@ -23,8 +23,9 @@ def load_words():
             wordle_candidates.append(word.strip())
 
 
-def error(message: str):
+def error(message: str, guess: str):
     print(message)
+    print(f"(your guess was {guess})")
     stats["crit_failures"] += 1
 
 
@@ -61,11 +62,11 @@ def play_game(game_num: int):
 
         guess = guess.lower().strip()
         if len(guess) != 5 or not guess.isalpha():
-            error("Guess must be five letter sequence")
+            error(f"Guess must be five letter sequence", guess)
             return
 
         if guess not in wordle_candidates:
-            error("Guess must be a valid english word")
+            error("Guess must be a valid english word", guess)
             return
 
         log(guess)

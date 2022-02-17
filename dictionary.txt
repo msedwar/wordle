@@ -194,7 +194,6 @@ aigre
 ailed
 ailes
 aimed
-ain't
 ainee
 aioli
 aired
@@ -1503,7 +1502,6 @@ campo
 camps
 campy
 camus
-can't
 canal
 candy
 caned
@@ -2590,7 +2588,6 @@ domal
 domed
 domes
 domos
-don't
 donah
 donas
 donat
@@ -4335,7 +4332,6 @@ hazel
 hazer
 hazes
 hazri
-he'll
 heads
 heady
 heald
@@ -4814,11 +4810,9 @@ islay
 isled
 isles
 islet
-isn't
 issei
 issue
 istle
-it'll
 itala
 italy
 itchy
@@ -8747,7 +8741,6 @@ shawn
 shaws
 shays
 shchi
-she'd
 sheaf
 sheal
 shear
@@ -10955,9 +10948,6 @@ waxer
 waxes
 wayne
 wazir
-we'll
-we're
-we've
 weald
 weals
 weans
@@ -11140,7 +11130,6 @@ woman
 wombs
 womby
 women
-won't
 wonga
 wongi
 wonky
@@ -11324,7 +11313,6 @@ yonne
 yoops
 yores
 yorks
-you'd
 youks
 young
 yourn
