@@ -12,7 +12,7 @@ from typing import Any, Dict, List
 rounds: int = 6
 
 solver_context: Dict[str, Any] = {}
-stats: Dict[str, int] = {}
+stats_iterations: List[Dict] = []
 verbose: bool = False
 wordle_candidates: List[str] = []
 
@@ -34,14 +34,14 @@ def log(message: str):
         print(message)
 
 
-def success(word: str, n: int):
+def success(word: str, n: int, iteration_num: int):
     log(f"You successfully guessed the word {word} in {n} tries!")
-    stats["tries"].append(n) # pyre-ignore
+    stats_iterations[iteration_num]["tries"].append(n) # pyre-ignore
 
 
-def failure(word: str):
+def failure(word: str, iteration_num: int):
     log(f"You failed to guess the word {word}.")
-    stats["failures"] += 1
+    stats_iterations[iteration_num]["failures"] += 1
 
 
 def play_iteration(wordle, iteration_num):
@@ -78,19 +78,19 @@ def play_iteration(wordle, iteration_num):
         if output != "ooooo":
             log(output)
         else:
-            success(wordle, round_num + 1)
+            success(wordle, round_num + 1, iteration_num)
             return
 
-    failure(wordle)
+    failure(wordle, iteration_num)
 
 
 def play_game(game_num: int, num_iterations: int):
     wordle = random.choice(wordle_candidates)
 
     log(f"Wordle {game_num}")
-    stats["games"] += 1
 
     for i in range(num_iterations):
+        stats_iterations[i]["games"] += 1
         play_iteration(wordle, i)
 
 
@@ -125,26 +125,29 @@ def parse_args() -> Dict[str, Any]:
 
 
 def print_stats():
-    num_games = stats["games"]
-    num_failures = stats["failures"]
-    num_crits = stats["crit_failures"]
-
-    tries_avg = 6 if len(stats["tries"]) == 0 else mean(stats["tries"])
-    failure_pct = float(num_failures) / num_games
-    crit_pct = float(num_crits) / num_games
-
     if verbose:
         print()
 
-    print(f"Games: {num_games}")
-    print(f"Average Num Guesses: {tries_avg}")
-    print(f"Failures: {num_failures} ({failure_pct * 100:.3f}%)")
-    print(f"Errors: {num_crits} ({crit_pct * 100:.3f}%)")
+    for i in range(len(stats_iterations)):
+        stats = stats_iterations[i]
+        num_games = stats["games"]
+        num_failures = stats["failures"]
+        num_crits = stats["crit_failures"]
+
+        tries_avg = 6 if len(stats["tries"]) == 0 else mean(stats["tries"])
+        failure_pct = float(num_failures) / num_games
+        crit_pct = float(num_crits) / num_games
+
+        print(f"Iteration {i}")
+        print(f"Games: {num_games}")
+        print(f"Average Num Guesses: {tries_avg}")
+        print(f"Failures: {num_failures} ({failure_pct * 100:.3f}%)")
+        print(f"Errors: {num_crits} ({crit_pct * 100:.3f}%)")
 
 
 def main():
     global solver_context
-    global stats
+    global stats_iterations
     global verbose
 
     options = parse_args()
@@ -161,6 +164,9 @@ def main():
         "crit_failures": 0,
         "tries": [],
     }
+
+    for i in range(iterations):
+        stats_iterations.append(stats)
 
     verbose = options["verbose"]
     for i in range(options["games"]):
