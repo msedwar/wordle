@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import copy
 import random
 import sys
 
@@ -166,7 +167,7 @@ def main():
     }
 
     for i in range(iterations):
-        stats_iterations.append(stats)
+        stats_iterations.append(copy.deepcopy(stats))
 
     verbose = options["verbose"]
     for i in range(options["games"]):
