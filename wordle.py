@@ -44,13 +44,8 @@ def failure(word: str):
     stats["failures"] += 1
 
 
-def play_game(game_num: int):
-    wordle = random.choice(wordle_candidates)
-    
-    log(f"Wordle {game_num}")
-    stats["games"] += 1
-
-    wordle_begin(solver_context)
+def play_iteration(wordle, iteration_num):
+    wordle_begin(solver_context, iteration_num)
 
     output = ""
 
@@ -89,6 +84,15 @@ def play_game(game_num: int):
     failure(wordle)
 
 
+def play_game(game_num: int, num_iterations: int):
+    wordle = random.choice(wordle_candidates)
+
+    log(f"Wordle {game_num}")
+    stats["games"] += 1
+
+    for i in range(num_iterations):
+        play_iteration(wordle, i)
+
 
 def parse_args() -> Dict[str, Any]:
     parser = argparse.ArgumentParser(
@@ -121,7 +125,6 @@ def parse_args() -> Dict[str, Any]:
 
 
 def print_stats():
-    
     num_games = stats["games"]
     num_failures = stats["failures"]
     num_crits = stats["crit_failures"]
@@ -150,7 +153,7 @@ def main():
     solver_context = {
         "dictionary": wordle_candidates,
     }
-    wordle_init(solver_context)
+    iterations = wordle_init(solver_context)
 
     stats = {
         "games": 0,
@@ -161,7 +164,7 @@ def main():
 
     verbose = options["verbose"]
     for i in range(options["games"]):
-        play_game(i + 1)
+        play_game(i + 1, iterations)
 
     print_stats()
 
