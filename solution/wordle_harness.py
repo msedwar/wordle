@@ -14,17 +14,21 @@ def wordle_init(context: Dict[str, Any]):
 
     Args:
         context: Context passed from wordle puzzle runner.
+
+    Returns:
+        Number of iterations of solutions to be preformed on the same word
     """
-    pass
+    return 1
 
 
-def wordle_begin(context: Dict[str, Any]):
+def wordle_begin(context: Dict[str, Any], iteration: int):
     """Called at the beginning of each new wordle puzzle.
 
     This can be used to initialize or reset any state attached to the context.
 
     Args:
         context: Context passed from wordle puzzle runner.
+        iteration: The iteration number for this puzzle
     """
     pass
 
