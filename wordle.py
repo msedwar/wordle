@@ -3,6 +3,7 @@
 import argparse
 import random
 import sys
+import time
 
 from solution.wordle_harness import wordle_init, wordle_begin, wordle_guess
 from statistics import mean
@@ -12,7 +13,7 @@ from typing import Any, Dict, List
 rounds: int = 6
 
 solver_context: Dict[str, Any] = {}
-stats: Dict[str, int] = {}
+stats: Dict[str, Any] = {}
 verbose: bool = False
 wordle_candidates: List[str] = []
 
@@ -36,7 +37,9 @@ def log(message: str):
 
 def success(word: str, n: int):
     log(f"You successfully guessed the word {word} in {n} tries!")
-    stats["tries"].append(n) # pyre-ignore
+    # Running average.
+    stats["tries_avg"] = \
+        (stats["tries_avg"] * (stats["games"] - 1) + n) / stats["games"]
 
 
 def failure(word: str):
@@ -122,11 +125,13 @@ def parse_args() -> Dict[str, Any]:
 
 def print_stats():
     
+    init_time = (stats["game_start"] - stats["init_start"]) * 1000
+    game_time = (stats["game_end"] - stats["game_start"])
     num_games = stats["games"]
     num_failures = stats["failures"]
     num_crits = stats["crit_failures"]
 
-    tries_avg = 6 if len(stats["tries"]) == 0 else mean(stats["tries"])
+    tries_avg = stats["tries_avg"]
     failure_pct = float(num_failures) / num_games
     crit_pct = float(num_crits) / num_games
 
@@ -137,6 +142,9 @@ def print_stats():
     print(f"Average Num Guesses: {tries_avg}")
     print(f"Failures: {num_failures} ({failure_pct * 100:.3f}%)")
     print(f"Errors: {num_crits} ({crit_pct * 100:.3f}%)")
+    print(f"Init time: {init_time:0.3f}ms")
+    print(f"Game time: {game_time:0.3f}s")
+    print(f"Average round time: {game_time / num_games * 1000:.3f}ms / round")
 
 
 def main():
@@ -150,18 +158,25 @@ def main():
     solver_context = {
         "dictionary": wordle_candidates,
     }
-    wordle_init(solver_context)
-
     stats = {
+        "init_start": 0,
+        "game_start": 0,
+        "game_end": 0,
         "games": 0,
         "failures": 0,
         "crit_failures": 0,
-        "tries": [],
+        "tries_avg": 0,
     }
 
+    stats["init_start"] = time.perf_counter()
+    wordle_init(solver_context)
+    
+
+    stats["game_start"] = time.perf_counter()
     verbose = options["verbose"]
     for i in range(options["games"]):
         play_game(i + 1)
+    stats["game_end"] = time.perf_counter()
 
     print_stats()
 
